@@ -171,8 +171,10 @@ function createObjects() {
         var randomNumber = Math.floor(Math.random() * 2) + 1;
         if(randomNumber === 2){
             tree.rotation.y = Math.PI / 2;
+            tree.position.y += 4;
+        } else{
+            tree.position.y += 4;
         }
-        tree.position.y += 4;
         // Apply the random scale to the tree
         tree.scale.set(randomScale, randomScale, randomScale);
     }
