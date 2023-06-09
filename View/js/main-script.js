@@ -11,7 +11,7 @@ var crowns = [];
 var body, cockpit, cylinder;
 var lights = [];
 var ufo;
-var wall1, wall2, window1, window2, door, roof1, roof2;
+var wall1, wall2, wall3, wall4, window1, window2, door, roof1, roof2, roof3, roof4;
 var spotlight;
 var areSpotlightsEnabled = true;
 var isSpotlightEnabled = true;
@@ -37,13 +37,12 @@ const windowMaterials = [new THREE.MeshBasicMaterial({ color: 0xadd8e6 }), new T
                         new THREE.MeshPhongMaterial({ color: 0xadd8e6 }), new THREE.MeshToonMaterial({ color: 0xadd8e6 })]; 
 const roofMaterials = [new THREE.MeshBasicMaterial({ color: 0x8b0000 }), new THREE.MeshLambertMaterial({ color: 0x8b0000 }), 
                         new THREE.MeshPhongMaterial({ color: 0x8b0000 }), new THREE.MeshToonMaterial({ color: 0x8b0000 })]; 
-const skydomePhongMaterial = new THREE.MeshPhongMaterial({ color: 0x000000, side: THREE.DoubleSide });  
 const textureLoader = new THREE.TextureLoader();
 const heightmapTexture = textureLoader.load('http://web.tecnico.ulisboa.pt/ist196864/heightmap.jpg');
 const terrainTexture = textureLoader.load('http://web.tecnico.ulisboa.pt/ist196864/terrainTexture.jpg');
 const skydomeTexture = textureLoader.load('http://web.tecnico.ulisboa.pt/ist196864/skydomeTexture.jpg');
 const terrainMaterial = new THREE.MeshPhongMaterial({ map : terrainTexture, wireframe: false, displacementMap: heightmapTexture});
-const skydomeMaterial = new THREE.MeshPhongMaterial({map : skydomeTexture, wireframe: false});
+const skydomeMaterial = new THREE.MeshPhongMaterial({map : skydomeTexture, wireframe: false, side: THREE.BackSide});
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -120,10 +119,13 @@ function createObjects() {
 
     for (var i = 0; i < 3; i++){
         var tree = new THREE.Object3D();
+        let treePivot = new THREE.Object3D();
         // Create trunk mesh
         var trunk = new THREE.Mesh(trunkGeometry, trunkMaterials[0]);
         trunk.position.y = -2;
         trunk.position.x = 3 + 2 * i;
+        treePivot.position.set(3 + 2 * i, -2, 0);
+        scene.add(treePivot);
         trunks.push(trunk);
         tree.add(trunk);
 
@@ -161,15 +163,22 @@ function createObjects() {
         // Add the tree to the scene
         scene.add(tree);
 
+        treePivot.add(tree);
+
         // Randomly modify the size of the tree
         var randomScale = Math.random() * (1.5 - 0.5) + 0.5; // Generate a random scale factor between 0.5 and 1.5
 
+        var randomNumber = Math.floor(Math.random() * 2) + 1;
+        if(randomNumber === 2){
+            tree.rotation.y = Math.PI / 2;
+        }
+        tree.position.y += 4;
         // Apply the random scale to the tree
         tree.scale.set(randomScale, randomScale, randomScale);
     }
 
     // Create skydome mesh
-    skydome = new THREE.Mesh(skyGeometry, skydomePhongMaterial);
+    skydome = new THREE.Mesh(skyGeometry, skydomeMaterial);
 
     // Create terrain mesh
     const terrainMesh = new THREE.Mesh(terrainGeometry, terrainMaterial);
@@ -231,22 +240,22 @@ function createObjects() {
     scene.add(ufo);
 
     let vertices1 = new Float32Array([
-        -5, 0, 3, // Vertex O
-        -5, 3, 3, // Vertex 1
-        -4.5, 2, 3, // vertex 2
-        -4.5, 1, 3, // Vertex 3
-        -3.5, 1, 3, // Vertex 4
-        -3, 0, 3, // Vertex 5
-        0, 3, 3, // Vertex 6
-        -3, 2, 3, // Vertex 7
-        -3.5, 2, 3, // Vertex 8
-        -0.5, 2, 3, // Vertex 9
-        -2, 2, 3, // Vertex 10
-        -1.5, 2, 3, // Vertex 11
-        -2, 0, 3, // Vertex 12
-        -1.5, 1, 3, // Vertex 13
-        -0.5, 1, 3, // Vertex 14
-        0, 0, 3 // Vertex 15
+        -5, -3, 3, // Vertex O
+        -5, 0, 3, // Vertex 1
+        -4.5, -1, 3, // vertex 2
+        -4.5, -2, 3, // Vertex 3
+        -3.5, -2, 3, // Vertex 4
+        -3, -3, 3, // Vertex 5
+        0, 0, 3, // Vertex 6
+        -3, -1, 3, // Vertex 7
+        -3.5, -1, 3, // Vertex 8
+        -0.5, -1, 3, // Vertex 9
+        -2, -1, 3, // Vertex 10
+        -1.5, -1, 3, // Vertex 11
+        -2, -3, 3, // Vertex 12
+        -1.5, -2, 3, // Vertex 13
+        -0.5, -2, 3, // Vertex 14
+        0, -3, 3 // Vertex 15
     ]);
     
     let indices1 = [
@@ -274,10 +283,10 @@ function createObjects() {
 
 
     let vertices2 = new Float32Array([
-        0, 0, 3, // Vertex O
-        0, 3, 3, // Vertex 1
-        1, 0, 0, // vertex 2
-        1, 3, 0, // Vertex 3
+        0, -3, 3, // Vertex O
+        0, 0, 3, // Vertex 1
+        1, -3, 0, // vertex 2
+        1, 0, 0, // Vertex 3
     ]);
     
     let indices2 = [
@@ -292,46 +301,46 @@ function createObjects() {
     wall2 = new THREE.Mesh(wall2Geometry, wallMaterials[0]);
 
     let vertices3 = new Float32Array([
-        -4.5, 1, 3, // Vertex O
-        -3.5, 1, 3, // Vertex 1
-        -4.5, 2, 3, // vertex 2
-        -3.5, 2, 3, // Vertex 3
+        -4, -3, 0, // Vertex O
+        -4, 0, 0, // Vertex 1
+        -5, 0, 3, // vertex 2
+        -5, -3, 3, // Vertex 3
     ]);
     
     let indices3 = [
-        0, 1, 2,
-        1, 3, 2
+        0, 2, 1,
+        2, 0, 3
     ];
 
-    let window1Geometry = new THREE.BufferGeometry();
-    window1Geometry.setAttribute('position', new THREE.BufferAttribute(vertices3, 3));
-    window1Geometry.setIndex(indices3);
-    window1Geometry.computeVertexNormals();
-    window1 = new THREE.Mesh(window1Geometry, windowMaterials[0]);
+    let wall3Geometry = new THREE.BufferGeometry();
+    wall3Geometry.setAttribute('position', new THREE.BufferAttribute(vertices3, 3));
+    wall3Geometry.setIndex(indices3);
+    wall3Geometry.computeVertexNormals();
+    wall3 = new THREE.Mesh(wall3Geometry, wallMaterials[0]);
 
     let vertices4 = new Float32Array([
-        -1.5, 1, 3, // Vertex O
-        -0.5, 1, 3, // Vertex 1
-        -1.5, 2, 3, // vertex 2
-        -0.5, 2, 0, // Vertex 3
+        -4, -3, 0, // Vertex O
+        -4, 0, 0, // Vertex 1
+        1, -3, 0, // vertex 2
+        1, 0, 0, // Vertex 3
     ]);
     
     let indices4 = [
         0, 1, 2,
-        1, 3, 2
+        2, 1, 3
     ];
 
-    let window2Geometry = new THREE.BufferGeometry();
-    window2Geometry.setAttribute('position', new THREE.BufferAttribute(vertices4, 3));
-    window2Geometry.setIndex(indices4);
-    window2Geometry.computeVertexNormals();
-    window2 = new THREE.Mesh(window2Geometry, windowMaterials[0]);
+    let wall4Geometry = new THREE.BufferGeometry();
+    wall4Geometry.setAttribute('position', new THREE.BufferAttribute(vertices4, 3));
+    wall4Geometry.setIndex(indices4);
+    wall4Geometry.computeVertexNormals();
+    wall4 = new THREE.Mesh(wall4Geometry, wallMaterials[0]);
 
     let vertices5 = new Float32Array([
-        -3, 0, 3, // Vertex O
-        -2, 0, 3, // Vertex 1
-        -3, 2, 3, // vertex 2
-        -2, 2, 0, // Vertex 3
+        -4.5, -2, 3, // Vertex O
+        -3.5, -2, 3, // Vertex 1
+        -4.5, -1, 3, // vertex 2
+        -3.5, -1, 3, // Vertex 3
     ]);
     
     let indices5 = [
@@ -339,17 +348,17 @@ function createObjects() {
         1, 3, 2
     ];
 
-    let doorGeometry = new THREE.BufferGeometry();
-    doorGeometry.setAttribute('position', new THREE.BufferAttribute(vertices5, 3));
-    doorGeometry.setIndex(indices5);
-    doorGeometry.computeVertexNormals();
-    door = new THREE.Mesh(doorGeometry, trunkMaterials[0]);
+    let window1Geometry = new THREE.BufferGeometry();
+    window1Geometry.setAttribute('position', new THREE.BufferAttribute(vertices5, 3));
+    window1Geometry.setIndex(indices5);
+    window1Geometry.computeVertexNormals();
+    window1 = new THREE.Mesh(window1Geometry, windowMaterials[0]);
 
     let vertices6 = new Float32Array([
-        -0.5, 4.5, 1.5, // Vertex O
-        -4.5, 4.5, 1.5, // Vertex 1
-        0, 3, 3, // vertex 2
-        -5, 3, 3, // Vertex 3
+        -1.5, -2, 3, // Vertex O
+        -0.5, -2, 3, // Vertex 1
+        -1.5, -1, 3, // vertex 2
+        -0.5, -1, 0, // Vertex 3
     ]);
     
     let indices6 = [
@@ -357,35 +366,109 @@ function createObjects() {
         1, 3, 2
     ];
 
-    let roof1Geometry = new THREE.BufferGeometry();
-    roof1Geometry.setAttribute('position', new THREE.BufferAttribute(vertices6, 3));
-    roof1Geometry.setIndex(indices6);
-    roof1Geometry.computeVertexNormals();
-    roof1 = new THREE.Mesh(roof1Geometry, roofMaterials[0]);
+    let window2Geometry = new THREE.BufferGeometry();
+    window2Geometry.setAttribute('position', new THREE.BufferAttribute(vertices6, 3));
+    window2Geometry.setIndex(indices6);
+    window2Geometry.computeVertexNormals();
+    window2 = new THREE.Mesh(window2Geometry, windowMaterials[0]);
 
     let vertices7 = new Float32Array([
-        -0.5, 4.5, 1.5, // Vertex O
-        1, 3, 0, // Vertex 1
-        0, 3, 3, // vertex 2
+        -3, -3, 3, // Vertex O
+        -2, -3, 3, // Vertex 1
+        -3, -1, 3, // vertex 2
+        -2, -1, 0, // Vertex 3
     ]);
     
     let indices7 = [
+        0, 1, 2,
+        1, 3, 2
+    ];
+
+    let doorGeometry = new THREE.BufferGeometry();
+    doorGeometry.setAttribute('position', new THREE.BufferAttribute(vertices7, 3));
+    doorGeometry.setIndex(indices7);
+    doorGeometry.computeVertexNormals();
+    door = new THREE.Mesh(doorGeometry, trunkMaterials[0]);
+
+    let vertices8 = new Float32Array([
+        -0.5, 1.5, 1.5, // Vertex O
+        -4.5, 1.5, 1.5, // Vertex 1
+        0, 0, 3, // vertex 2
+        -5, 0, 3, // Vertex 3
+    ]);
+    
+    let indices8 = [
+        0, 1, 2,
+        1, 3, 2
+    ];
+
+    let roof1Geometry = new THREE.BufferGeometry();
+    roof1Geometry.setAttribute('position', new THREE.BufferAttribute(vertices8, 3));
+    roof1Geometry.setIndex(indices8);
+    roof1Geometry.computeVertexNormals();
+    roof1 = new THREE.Mesh(roof1Geometry, roofMaterials[0]);
+
+    let vertices9 = new Float32Array([
+        -0.5, 1.5, 1.5, // Vertex O
+        1, 0, 0, // Vertex 1
+        0, 0, 3, // vertex 2
+    ]);
+    
+    let indices9 = [
         0, 2, 1
     ];
 
     let roof2Geometry = new THREE.BufferGeometry();
-    roof2Geometry.setAttribute('position', new THREE.BufferAttribute(vertices7, 3));
-    roof2Geometry.setIndex(indices7);
+    roof2Geometry.setAttribute('position', new THREE.BufferAttribute(vertices9, 3));
+    roof2Geometry.setIndex(indices9);
     roof2Geometry.computeVertexNormals();
     roof2 = new THREE.Mesh(roof2Geometry, roofMaterials[0]);
 
+    let vertices10 = new Float32Array([
+        -0.5, 1.5, 1.5, // Vertex O
+        -4.5, 1.5, 1.5, // Vertex 1
+        1, 0, 0, // vertex 2
+        -4, 0, 0, // Vertex 3
+    ]);
+    
+    let indices10 = [
+        0, 2, 1,
+        1, 2, 3
+    ];
+
+    let roof3Geometry = new THREE.BufferGeometry();
+    roof3Geometry.setAttribute('position', new THREE.BufferAttribute(vertices10, 3));
+    roof3Geometry.setIndex(indices10);
+    roof3Geometry.computeVertexNormals();
+    roof3 = new THREE.Mesh(roof3Geometry, roofMaterials[0]);
+
+    let vertices11 = new Float32Array([
+        -4.5, 1.5, 1.5, // Vertex O
+        -4, 0, 0, // Vertex 1
+        -5, 0, 3, // vertex 2
+    ]);
+    
+    let indices11 = [
+        1, 2, 0
+    ];
+
+    let roof4Geometry = new THREE.BufferGeometry();
+    roof4Geometry.setAttribute('position', new THREE.BufferAttribute(vertices11, 3));
+    roof4Geometry.setIndex(indices11);
+    roof4Geometry.computeVertexNormals();
+    roof4 = new THREE.Mesh(roof4Geometry, roofMaterials[0]);
+
     scene.add(wall1);
     scene.add(wall2);
+    scene.add(wall3);
+    scene.add(wall4);
     scene.add(window1);
     scene.add(window2);
     scene.add(door);
     scene.add(roof1);
     scene.add(roof2);
+    scene.add(roof3);
+    scene.add(roof4);
 }
 
 ////////////
@@ -427,6 +510,8 @@ function init() {
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+    document.body.appendChild( VRButton.createButton( renderer ) );
+    renderer.xr.enabled = true;
 
     createScene();
     createCamera();
@@ -446,7 +531,7 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
-    requestAnimationFrame(animate);
+    renderer.setAnimationLoop(animate);
     update();
     render();
 }
@@ -571,11 +656,15 @@ function setShadingType() {
             }
             wall1.material = wallMaterials[1];
             wall2.material = wallMaterials[1];
+            wall3.material = wallMaterials[1];
+            wall4.material = wallMaterials[1];
             window1.material = windowMaterials[1];
             window2.material = windowMaterials[1];
             door.material = trunkMaterials[1];
             roof1.material = roofMaterials[1];
             roof2.material = roofMaterials[1];
+            roof3.material = roofMaterials[1];
+            roof4.material = roofMaterials[1];
             break;
         case 'Phong':
             moon.material = moonMaterials[2];
@@ -595,11 +684,15 @@ function setShadingType() {
             }
             wall1.material = wallMaterials[2];
             wall2.material = wallMaterials[2];
+            wall3.material = wallMaterials[2];
+            wall4.material = wallMaterials[2];
             window1.material = windowMaterials[2];
             window2.material = windowMaterials[2];
             door.material = trunkMaterials[2];
             roof1.material = roofMaterials[2];
             roof2.material = roofMaterials[2];
+            roof3.material = roofMaterials[2];
+            roof4.material = roofMaterials[2];
             break;
         case 'Toon':
             moon.material = moonMaterials[3];
@@ -619,11 +712,15 @@ function setShadingType() {
             }
             wall1.material = wallMaterials[3];
             wall2.material = wallMaterials[3];
+            wall3.material = wallMaterials[3];
+            wall4.material = wallMaterials[3];
             window1.material = windowMaterials[3];
             window2.material = windowMaterials[3];
             door.material = trunkMaterials[3];
             roof1.material = roofMaterials[3];
             roof2.material = roofMaterials[3];
+            roof3.material = roofMaterials[3];
+            roof4.material = roofMaterials[3];
             break;
         case 'Basic':
             moon.material = moonMaterials[0];
@@ -643,11 +740,15 @@ function setShadingType() {
             }
             wall1.material = wallMaterials[0];
             wall2.material = wallMaterials[0];
+            wall3.material = wallMaterials[0];
+            wall4.material = wallMaterials[0];
             window1.material = windowMaterials[0];
             window2.material = windowMaterials[0];
             door.material = trunkMaterials[0];
             roof1.material = roofMaterials[0];
             roof2.material = roofMaterials[0];
+            roof3.material = roofMaterials[0];
+            roof4.material = roofMaterials[0];
             break;
     }
     
